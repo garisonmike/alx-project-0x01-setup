@@ -1,5 +1,5 @@
 // components/common/UserModal.tsx
-import { UserData, UserModalProps } from "@/interfaces";
+import { UserData, UserModalProps, UserProps } from "@/interfaces";
 import React, { useState } from "react";
 
 const UserModal: React.FC<UserModalProps> = ({ onClose, onSubmit }) => {
@@ -19,7 +19,28 @@ const UserModal: React.FC<UserModalProps> = ({ onClose, onSubmit }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(user);
+        // Convert UserData to UserProps format
+        const newUser: UserProps = {
+            id: 0, // Will be set by parent component
+            name: user.name,
+            username: user.username,
+            email: user.email,
+            phone: user.phone,
+            website: user.website,
+            address: {
+                street: "",
+                suite: "",
+                city: "",
+                zipcode: "",
+                geo: { lat: "0", lng: "0" }
+            },
+            company: {
+                name: user.companyName,
+                catchPhrase: "",
+                bs: ""
+            }
+        };
+        onSubmit(newUser);
         onClose();
     };
 

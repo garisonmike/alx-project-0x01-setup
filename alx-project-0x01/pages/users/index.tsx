@@ -2,29 +2,20 @@
 import UserCard from "@/components/common/UserCard";
 import UserModal from "@/components/common/UserModal";
 import Header from "@/components/layout/Header";
-import { UserData, UserProps } from "@/interfaces";
-import { GetStaticProps } from "next";
+import { UserProps } from "@/interfaces";
 import React, { useState } from "react";
 
-// Define the shape of the component props
-interface UsersPageProps {
-    users: UserProps[];
-}
-
-const Users: React.FC<UsersPageProps> = ({ users: initialUsers }) => {
+const Users: React.FC<{ posts: UserProps[] }> = ({ posts }) => {
     const [isModalOpen, setModalOpen] = useState(false);
     // State to hold the list of users (including any newly added ones)
-    const [users, setUsers] = useState<UserProps[]>(initialUsers);
+    const [users, setUsers] = useState<UserProps[]>(posts);
 
-    const handleAddUser = (newUserData: UserData) => {
+    const handleAddUser = (newUserData: UserProps) => {
         // In a real app, this would send a POST request.
         // Here, we simulate adding the user to the list.
         const newUser: UserProps = {
             ...newUserData,
             id: users.length + 1,
-            // Provide default/mock values for nested data not captured in the simplified form
-            address: { city: 'New City', street: '123 Main St', suite: 'N/A', zipcode: '00000', geo: { lat: '0', lng: '0' } },
-            company: { name: newUserData.companyName, catchPhrase: 'New Catchphrase', bs: 'new business' },
         };
         setUsers((prevUsers) => [newUser, ...prevUsers]); // Add new user to the top
     };
@@ -45,7 +36,7 @@ const Users: React.FC<UsersPageProps> = ({ users: initialUsers }) => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {users.map((user) => (
+                        {posts.map((user) => (
                             <UserCard
                                 key={user.id}
                                 {...user}
@@ -67,13 +58,13 @@ const Users: React.FC<UsersPageProps> = ({ users: initialUsers }) => {
 }
 
 // Next.js data fetching function for Static Site Generation (SSG)
-export const getStaticProps: GetStaticProps<UsersPageProps> = async () => {
+export async function getStaticProps() {
     const response = await fetch("https://jsonplaceholder.typicode.com/users")
-    const users: UserProps[] = await response.json()
+    const posts = await response.json()
 
     return {
         props: {
-            users,
+            posts,
         }
     }
 }
